@@ -1,17 +1,18 @@
 import express from 'express';
 import dotenv from 'dotenv';
 import connectDB from './config/db.js';
+import todoRouter from './routes/to-do.routes.js';
 
 dotenv.config();
 
 const app = express();
 
+app.use(express.json());
+
 connectDB();
 
-// Example route
-app.get("/", (req, res) => {
-  res.send("MongoDB connection successful ✅");
-});
+
+app.use('/api', todoRouter);
 
 
 const PORT = process.env.PORT || 6000;
