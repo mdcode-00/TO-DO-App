@@ -1,13 +1,13 @@
 import ToDo from "../models/to-do.model.js";
 
-export const addTodoController = (req, res) => {
+export const addTodoController = async (req, res) => {
   const { title, description, dueDate, completed } = req.body;
   try {
     if (!title) {
       return res.status(400).json({ message: "Title is required" });
     }
 
-    const exestingTodo = ToDo.findOne({ title });
+    const exestingTodo = await ToDo.findOne({ title });
     if (exestingTodo) {
       return res.status(409).json({ message: "Todo with this title already exists" });
     }
@@ -45,7 +45,9 @@ export const updateTodoController = async (req, res) => {
 
     const { title, description, dueDate, completed } = req.body;
 
-
+    if (!title || !description || !dueDate) {
+      return res.status(400).json({ message: "All fields are required" })
+    }
 
     const updatedTodo = await ToDo.findByIdAndUpdate(todoId,
       {
@@ -87,3 +89,15 @@ export const deleteTodoController = async (req, res) => {
 
 }
 
+export const getTodosByIdController = async (req, res) => {
+  try {
+    const { _id } = req.params;
+    const todo = await ToDo.findById({ _id });
+    if (!todo) {
+      return res.status(404).json({ message: "Todo not found" });
+    }
+    res.status(200).json(todo);
+  } catch (error) {
+    console.log("Error fetching todo by ID:", error);
+  }
+}
